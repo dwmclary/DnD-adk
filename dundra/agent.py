@@ -5,7 +5,7 @@ from .sub_agents.character_creator import character_creator_agent
 from .sub_agents.editor import editor_agent
 from .sub_agents.penciller import penciller_agent
 from .sub_agents.publisher import publisher_agent
-from google.adk import Agent
+from google.adk.agents.llm_agent import Agent
 from google.adk.agents import LoopAgent, SequentialAgent
 
 # =============================
@@ -36,7 +36,7 @@ story_creation_agent = SequentialAgent(
 root_agent = Agent(
     name="root_agent",
     description="The root agent is the entry point for the D&D mini campaign adventure.",
-    model=os.getenv("MODEL_NAME"),
+    model="gemini-3-flash-preview",
     instruction="""
     - Greet the user and let them know you will help them write a D&D mini campaign adventure.
     - Ask them for a topic that the mini campaign should be about.
