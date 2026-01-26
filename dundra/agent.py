@@ -4,6 +4,7 @@ from .sub_agents.writer import writer_agent
 from .sub_agents.character_creator import character_creator_agent
 from .sub_agents.editor import editor_agent
 from .sub_agents.penciller import penciller_agent
+from .sub_agents.mapmaker import mapmaker_agent
 from .sub_agents.publisher import publisher_agent
 from google.adk.agents.llm_agent import Agent
 from google.adk.agents import LoopAgent, SequentialAgent
@@ -29,6 +30,7 @@ story_creation_agent = SequentialAgent(
     sub_agents=[
         iterative_story_refinement_agent,
         penciller_agent,
+        mapmaker_agent,
         publisher_agent
     ]
 )
@@ -38,9 +40,9 @@ root_agent = Agent(
     description="The root agent is the entry point for the D&D mini campaign adventure.",
     model="gemini-3-flash-preview",
     instruction="""
-    - Greet the user and let them know you will help them write a D&D mini campaign adventure.
-    - Ask them for a topic that the mini campaign should be about.
-    - When they respond, set the value of 'prompt' to the user's input AND transfer to the 'story_creation' agent
+    - Greet the user.
+    - If the user has NOT provided a topic, ask them for a topic that the mini campaign should be about.
+    - If the user HAS provided a topic (or when they respond with one), set the value of 'prompt' to that topic AND transfer to the 'story_creation' agent immediately.
     """,
     output_key="prompt",
     sub_agents=[story_creation_agent]

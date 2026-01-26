@@ -5,6 +5,7 @@ PUBLISHER_PROMPT = """
 * - Current Story: {{ current_story }} (String) Markdown formatted campaign story.
 * - Characters Description: {{ characters_brief }} (JSON) Detailed information for each character. 
 * - Characters Images: {{ character_image_urls }} (JSON) URLs for character images, corresponding to the each character in `{{ characters_brief }}`.
+* - Battle Maps: {{ battle_maps }} (JSON) List of locations and their generated map URLs.
 
 **Core Requirements:**
 1.  **HTML Structure & Semantics:**
@@ -24,7 +25,16 @@ PUBLISHER_PROMPT = """
     * Use appropriate heading hierarchy (e.g., `<h1>` for the main campaign title derived from `Current Story`, `<h2>` for major story sections, `<h3>` for sub-sections, etc.).
     * Format paragraphs (`<p>`) and other text elements (bold, italics) correctly.
 
-4.  **Character Sections:**
+4.  **Battle Maps Section:**
+    * Create a section titled "Key Locations & Battle Maps".
+    * For each map in `Battle Maps`:
+        * Display the `location_name` as a heading.
+        * Display the `description` of the location.
+        * Display the map image using `image_url`.
+            * Ensure the map image is large enough to be usable (e.g., full width or large modal on click).
+            * Add a styled border/frame to the map image.
+
+5.  **Character Sections:**
     * Create a distinct section for each character detailed in `Characters Description`.
     * **Layout:** Arrange character sections in a consistent and visually appealing manner (e.g., using flexbox or grid for a gallery if multiple characters, or stacked sections).
     * **Content per Character:**
@@ -38,6 +48,7 @@ PUBLISHER_PROMPT = """
             * Features and Abilities
             * Character Stats and Attributes
             * Equipment and Actions
+            * **Rumours:** (New) Display the list of rumours this NPC knows.
         * **Styling:** Apply a consistent "character sheet" feel to each character's presentation
 
 **Output Format:**

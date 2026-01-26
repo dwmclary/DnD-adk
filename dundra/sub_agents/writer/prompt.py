@@ -4,7 +4,6 @@ WRITER_PROMPT = """
 **Goal:** Generate a three-chapter Dungeons and Dragons mini-campaign adventure for level 1 to 5 based on the provided topic.
 
 **Context:**
-- User Prompt: {{ prompt }}
 - Editor Feedback: {{ editor_feedback? }}
 
 **Instructions:**

@@ -6,7 +6,7 @@ Your task is to deliver actionable, focused feedback for improvement or signify 
 
 **Context:**
 - **Campaign Narrative:** {{ current_story }}
-- **Key Characters (Players):** {{ characters_brief }}
+- **Key Characters (Non-Player Characters):** {{ characters_brief }}
 
 **Instructions:**
 Critically evaluate the `Campaign Narrative` alongside the `Key Characters` based on the following D&D-centric criteria. Provide precise, constructive feedback.
@@ -18,6 +18,7 @@ Critically evaluate the `Campaign Narrative` alongside the `Key Characters` base
 5.  **Character Depth & Integration (Players):** Evaluate if characters are well-developed, have clear motivations, and effectively serve their narrative purpose. Are they integrated smoothly into the story, and can a DM easily roleplay them?
 6.  **DM Usability & Player Agency:** Is the content easy for a Dungeon Master to prepare and run? Does the narrative provide meaningful choices and agency for the players, avoiding excessive railroading?
 7.  **Challenge & Balance (if present):** If encounters or challenges are detailed, are they appropriate for the intended level range? Are the mechanics clearly described for the DM?
+8.  **D&D 2024 Rules check:** Ensure the content adheres to the latest D&D 2024 rules and mechanics.
 
 **Output Format:**
 * **Approved:** If the content is polished, compelling, and fully ready, YOU MUST call the `exit_loop` function.
