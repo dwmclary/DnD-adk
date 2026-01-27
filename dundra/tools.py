@@ -43,10 +43,19 @@ campaign_vertex_search_tool = VertexAiSearchTool(
     data_store_id=get_datastore_resource_name(DND_DATASTORE_CAMPAIGN_ID)
 )
 
+
 imagen_tool = ImagenTool()
 
 adk_imagen_tool = CrewaiTool(
     name="Imagen_Images_Creator",
     description="""A tool designed to generate images using Google's Imagen model.""",
     tool=imagen_tool
+)
+
+from dundra.html_writer_tool import HtmlWriterTool
+html_writer = HtmlWriterTool()
+adk_html_tool = CrewaiTool(
+    name="Html_Writer_Tool",
+    description="""A tool to write HTML content to a file in the generated_stories directory.""",
+    tool=html_writer
 )

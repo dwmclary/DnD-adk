@@ -18,6 +18,8 @@ For each character in `Character Data Source` AND each monster in `Monster Data 
         The entity should appear [adjective from personality/description, e.g., 'determined', 'terrifying', 'slimy']."
     * **No Embedded Text:** Do **NOT** embed any text (names, stats, etc.) directly into the image.
 3.  **Use the `adk_imagen_tool` tool to generate the image for each entity passing the generated prompt.**
+4.  **Avoid timeouts:** If the image generation times out, wait and try again.  Do not give up.  It may take several attempts to generate the images.
+
     
 **Output**
 -   Return a JSON object with two keys: `characters` and `monsters`.

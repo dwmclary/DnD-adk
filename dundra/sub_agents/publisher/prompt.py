@@ -69,7 +69,7 @@ PUBLISHER_PROMPT = """
             * **Rumours:** (New) Display the list of rumours this NPC knows.
         * **Styling:** Apply a consistent "character sheet" feel to each character's presentation
 
-6.  **Write the HTML:** Write the HTML file using the `adk_html_tool` tool to a directory called "generated_stories" with the filename "campaign_and_characters.html".
+6.  **Write the HTML:** Write the HTML file using the `Html_Writer_Tool` tool to a directory called "generated_stories" with the filename "campaign_and_characters.html".
 
 **Output Format:**
 

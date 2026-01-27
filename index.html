@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adventure Book: The Slumber of Scorch-Scale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg-paper: #fdf6e3;
+      --bg-dark-paper: #f4e4bc;
+      --text-main: #2c1810;
+      --accent-red: #8b0000;
+      --accent-brown: #8b4513;
+      --accent-gold: #d4af37;
+      --border-color: #5c4033;
+    }
+
+    body {
+      font-family: 'EB Garamond', serif;
+      background-color: var(--bg-paper);
+      color: var(--text-main);
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png');
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+      background-color: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      border-left: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: 'Cinzel Decorative', cursive;
+      color: var(--accent-red);
+      margin-top: 1.5em;
+    }
+
+    h1 {
+      font-size: 3rem;
+      text-align: center;
+      border-bottom: 3px double var(--accent-brown);
+      padding-bottom: 0.5rem;
+      margin-bottom: 2rem;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+      font-size: 2rem;
+      border-bottom: 2px solid var(--accent-brown);
+      padding-bottom: 0.25rem;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      color: var(--accent-brown);
+    }
+
+    p {
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    strong {
+      font-weight: 700;
+      color: var(--accent-brown);
+    }
+
+    ul {
+      list-style-type: disc;
+      padding-left: 2rem;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    /* --- Story Box --- */
+    .story-box {
+      background-color: var(--bg-dark-paper);
+      border: 2px solid var(--accent-brown);
+      padding: 1.5rem;
+      margin: 2rem 0;
+      border-radius: 8px;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .dm-note {
+      background-color: #e6f3ff;
+      border: 1px solid #4a90e2;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+      font-style: italic;
+    }
+
+    /* --- Map Section --- */
+    .map-card {
+      background: white;
+      padding: 1rem;
+      border: 1px solid var(--accent-brown);
+      margin-bottom: 2rem;
+      box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .map-image {
+      width: 100%;
+      height: auto;
+      border: 4px solid var(--text-main);
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    /* --- Character Section --- */
+    .character-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .character-card {
+      background: #fff;
+      border: 2px solid var(--accent-brown);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .character-header {
+      background-color: var(--accent-brown);
+      color: white;
+      padding: 0.5rem 1rem;
+      font-family: 'Cinzel Decorative', cursive;
+      font-size: 1.25rem;
+      text-align: center;
+    }
+
+    .character-image-container {
+      width: 100%;
+      height: 300px;
+      overflow: hidden;
+      border-bottom: 2px solid var(--accent-brown);
+      background-color: #333;
+      position: relative;
+    }
+
+    .character-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    .character-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #aaa;
+      background-color: #2c1810;
+      font-family: 'Cinzel Decorative', cursive;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .character-body {
+      padding: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .tag-pill {
+      display: inline-block;
+      background-color: var(--bg-dark-paper);
+      border: 1px solid var(--accent-brown);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      margin-right: 5px;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .rumour-box {
+      margin-top: 1rem;
+      padding: 0.5rem;
+      background-color: #f9f9f9;
+      border-left: 3px solid var(--accent-red);
+      font-style: italic;
+      font-size: 0.9rem;
+    }
+
+    /* --- Bestiary Section --- */
+    .stat-block {
+      background-color: #fdf1dc;
+      border: 2px solid #e69a28;
+      /* Goldish border */
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+      margin-bottom: 2rem;
+      font-family: 'Noto Sans', sans-serif;
+      /* Cleaner font for stats */
+      page-break-inside: avoid;
+    }
+
+    .stat-block h3 {
+      font-family: 'Cinzel Decorative', cursive;
+      color: var(--accent-red);
+      font-size: 1.8rem;
+      margin: 0;
+      border-bottom: 2px solid var(--accent-red);
+    }
+
+    .stat-block .type {
+      font-style: italic;
+      margin-bottom: 0.5rem;
+    }
+
+    .tapered-rule {
+      display: block;
+      height: 5px;
+      border: none;
+      color: var(--accent-red);
+      background-color: var(--accent-red);
+      clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+      margin: 0.5rem 0;
+    }
+
+    .abilities {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      text-align: center;
+      color: var(--accent-red);
+      font-weight: bold;
+      margin: 1rem 0;
+    }
+
+    .ability-score {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ability-score span {
+      color: black;
+      font-weight: normal;
+    }
+
+    .stat-row {
+      margin-bottom: 0.25rem;
+    }
+
+    .action-name {
+      font-weight: bold;
+      font-style: italic;
+      color: #2c1810;
+    }
+
+    .monster-image {
+      float: right;
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border: 2px solid var(--accent-red);
+      margin-left: 1rem;
+      margin-bottom: 1rem;
+      shape-outside: circle(50%);
+      border-radius: 50%;
+    }
+
+    /* --- Loot Section --- */
+    .loot-item {
+      border-bottom: 1px solid var(--accent-brown);
+      padding: 1rem 0;
+    }
+
+    .loot-item:last-child {
+      border-bottom: none;
+    }
+
+    .loot-name {
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: var(--accent-brown);
+    }
+
+    .loot-meta {
+      font-style: italic;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .abilities {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+
+      .monster-image {
+        float: none;
+        display: block;
+        margin: 0 auto 1rem auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- HEADER -->
+    <header>
+      <h1>The Slumber of Scorch-Scale</h1>
+      <div class="dm-note">
+        <strong>Dungeon Master's Guide:</strong> This mini-campaign is designed for <strong>three players</strong>
+        (Levels 3-5). It uses D&D 2024 Rules. <br>
+        <em>Balance Adjustments:</em> Encourage environmental interaction, allow "Heroic Recovery" (10-min Short Rest),
+        and note that the final boss is weakened.
+      </div>
+    </header>
+
+    <!-- CAMPAIGN STORY -->
+    <section id="campaign-story">
+      <h2>Introduction</h2>
+      <div class="story-box">
+        <p><strong>Setting:</strong> Ignis Vale, a volcanic range where the air tastes of sulfur and ash.</p>
+        <p><strong>The Conflict:</strong> The ancient Red Dragon <strong>Ignisvax</strong> was sealed centuries ago by
+          the Monks of the Cooling Hand. Now, the <strong>Cinder-Caller</strong> cult, led by High Priestess Vora, has
+          infiltrated the <strong>Temple of Sunken Embers</strong> to break the seals. If Ignisvax wakes, the nearby
+          village of Oakhaven will be the first to burn.</p>
+      </div>
+
+      <h2>Chapter 1: The Ash-Choked Ascent (Level 3)</h2>
+      <p><strong>Objective:</strong> Recover the Sapphire Orb and reach the Obsidian Gate.</p>
+      <p>Oakhaven is choking. Mayor Pendergast hires the party to find Kaelen, the only one who knows how to pass the
+        Wall of Eternal Flame.</p>
+      <ul>
+        <li><strong>The Screaming Woods:</strong> Ambush by 3 Magmin. The trees "scream" due to wind in hollow trunks.
+        </li>
+        <li><strong>The Shrine of Frost:</strong> The party must defeat a corrupted Water Weird (Steam Mephit Swarm) to
+          get the Sapphire Orb.</li>
+        <li><strong>The Traitor:</strong> Elara Vane helps the party but secretly marks them to attract fire elementals.
+        </li>
+      </ul>
+
+      <h2>Chapter 2: The Halls of Waking (Level 4)</h2>
+      <p><strong>Objective:</strong> Sabotage the three Focus Braziers.</p>
+      <p>The party infiltrates the temple. To weaken the dragon's awakening, three braziers must be extinguished.</p>
+      <ul>
+        <li><strong>Brazier of Logic:</strong> A puzzle involving the four seasons and directions.</li>
+        <li><strong>Brazier of Shadows:</strong> A stealth encounter with a sleeping Hell Hound on crunchy charcoal.
+        </li>
+        <li><strong>Brazier of Souls:</strong> A moral choice to extinguish the fire (alert guards) or perform a ritual
+          to free souls (defend for 3 rounds).</li>
+      </ul>
+
+      <h2>Chapter 3: The Heart of the Hearth (Level 5)</h2>
+      <p><strong>Objective:</strong> Defeat High Priestess Vora and Bind/Slay Ignisvax.</p>
+      <p>The ritual reaches its climax in the Lowest Caldera. Vora defends the dragon while chains snap every 2 rounds.
+      </p>
+      <ul>
+        <li><strong>The Final Conflict:</strong> Fight High Priestess Vora. If the ritual completes, fight
+          <strong>Weakened Ignisvax</strong>.</li>
+        <li><strong>Choice A (Re-bind):</strong> Use the Ancient Hammers at the Forge Pillars to repair the chains (DC
+          15 Athletics).</li>
+        <li><strong>Choice B (Slay):</strong> Kill the dragon for the "Dragon Slayer" title and rare loot.</li>
+      </ul>
+    </section>
+
+    <!-- BATTLE MAPS -->
+    <section id="maps">
+      <h2>Key Locations & Battle Maps</h2>
+
+      <div class="map-card">
+        <h3>Ignis Vale Regional Map</h3>
+        <p>A comprehensive map of the Ignis Vale region, showing the village of Oakhaven, the treacherous Ashen Path,
+          the imposing Obsidian Gate, and the Temple of Sunken Embers perched atop the volcanic peak.</p>
+        <img src="generated_images/imagen_a1a07de6-f907-4691-811a-cbf004fdb372.png" alt="Ignis Vale Regional Map"
+          class="map-image">
+      </div>
+
+      <div class="map-card">
+        <h3>The Shrine of Frost</h3>
+        <p>The site of the first major encounter in Chapter 1. The party must venture into this frozen sanctuary to
+          recover the Sapphire Orb (Key of Cool Waters).</p>
+        <img src="generated_images/imagen_18e12ed9-d900-45cd-937c-5d889901e5cc.png" alt="The Shrine of Frost Map"
+          class="map-image">
+      </div>
+
+      <div class="map-card">
+        <h3>The Brazier of Shadows</h3>
+        <p>One of the key ritual chambers in Chapter 2. A stealth or combat encounter involving a sleeping Hell Hound
+          and a massive obsidian brazier.</p>
+        <img src="generated_images/imagen_87ca6426-df4a-49db-9989-15f976181e41.png" alt="The Brazier of Shadows Map"
+          class="map-image">
+      </div>
+
+      <div class="map-card">
+        <h3>The Heart of the Hearth</h3>
+        <p>The epic conclusion of the campaign in Chapter 3. The central ritual platform where High Priestess Vora
+          attempts to free Ignisvax.</p>
+        <img src="generated_images/imagen_58174fee-ae2b-4d75-a6bf-1ad632358b11.png" alt="The Heart of the Hearth Map"
+          class="map-image">
+      </div>
+    </section>
+
+    <!-- CHARACTERS -->
+    <section id="characters">
+      <h2>Dramatis Personae</h2>
+      <div class="character-grid">
+
+        <!-- Mayor Pendergast -->
+        <div class="character-card">
+          <div class="character-header">Mayor Silas Pendergast</div>
+          <div class="character-image-container">
+            <img src="generated_images/imagen_f7b8ee8d-6a45-425d-bdc8-b9e816a05dbe.png" alt="Mayor Silas Pendergast"
+              class="character-image">
+          </div>
+          <div class="character-body">
+            <p><span class="tag-pill">Human</span> <span class="tag-pill">Noble</span> <span class="tag-pill">LG</span>
+            </p>
+            <p><strong>Role:</strong> Quest Giver</p>
+            <p>A portly man in soot-stained silks, constantly mopping his brow. Deeply protective of his villagers but
+              prone to throwing gold at problems.</p>
+            <div class="rumour-box">"The Cinder-Caller cultists have been stealing ancient relics from the village
+              archives."</div>
+          </div>
+        </div>
+
+        <!-- Kaelen -->
+        <div class="character-card">
+          <div class="character-header">Kaelen of the Peaks</div>
+          <div class="character-image-container">
+            <img src="generated_images/imagen_c18e5f31-6d96-41b2-9de6-d33b41641a18.png" alt="Kaelen of the Peaks"
+              class="character-image">
+          </div>
+          <div class="character-body">
+            <p><span class="tag-pill">Wood Elf</span> <span class="tag-pill">Hermit</span> <span
+                class="tag-pill">NG</span></p>
+            <p><strong>Role:</strong> Guide</p>
+            <p>An ancient elf with moss in his hair. Speaks in weather metaphors and knows the secret paths, though his
+              memory is fading.</p>
+            <div class="rumour-box">"The Sapphire Orb is forged from the tears of the mountain itself."</div>
+          </div>
+        </div>
+
+        <!-- Elara Vane -->
+        <div class="character-card">
+          <div class="character-header">Elara Vane</div>
+          <div class="character-image-container">
+            <div class="character-placeholder">Image Unavailable</div>
+          </div>
+          <div class="character-body">
+            <p><span class="tag-pill">High Elf</span> <span class="tag-pill">Spy</span> <span class="tag-pill">NE</span>
+            </p>
+            <p><strong>Role:</strong> Traitor</p>
+            <p>Sharp-featured and calculating. Poses as Kaelen's apprentice but secretly serves the cult. Marks the
+              party for death.</p>
+            <div class="rumour-box">"There is a chant that lulls the Hell Hound to sleep."</div>
+          </div>
+        </div>
+
+        <!-- Vora -->
+        <div class="character-card">
+          <div class="character-header">High Priestess Vora</div>
+          <div class="character-image-container">
+            <img src="generated_images/imagen_f7cb2ed3-832d-43a6-a3b1-596dcf3e461f.png" alt="High Priestess Vora"
+              class="character-image">
+          </div>
+          <div class="character-body">
+            <p><span class="tag-pill">Fire Genasi</span> <span class="tag-pill">Acolyte</span> <span
+                class="tag-pill">LE</span></p>
+            <p><strong>Role:</strong> Main Antagonist</p>
+            <p>Skin like cooling magma. A calm zealot who believes the world must burn to be purified. Obsessed with the
+              ritual.</p>
+            <div class="rumour-box">"She carries the Master Ember to command the temple fires."</div>
+          </div>
+        </div>
+
+        <!-- Otho -->
+        <div class="character-card">
+          <div class="character-header">Archivist Otho</div>
+          <div class="character-image-container">
+            <img src="generated_images/imagen_0df1ad38-ff93-4392-bab3-8df339ced191.png" alt="Archivist Otho"
+              class="character-image">
+          </div>
+          <div class="character-body">
+            <p><span class="tag-pill">Ghost</span> <span class="tag-pill">Sage</span> <span class="tag-pill">LN</span>
+            </p>
+            <p><strong>Role:</strong> Lore Source</p>
+            <p>A pedantic ghost obsessed with library organization. Provides shortcuts if his books are tidied.</p>
+            <div class="rumour-box">"The Ancient Hammers were used to build the mountain itself."</div>
+          </div>
+        </div>
+
+        <!-- Hestia Thorne -->
+        <div class="character-card">
+          <div class="character-header">Captain Hestia Thorne</div>
+          <div class="character-image-container">
+            <div class="character-placeholder">Image Unavailable</div>
+          </div>
+          <div class="character-body">
+            <p><span class="tag-pill">Tiefling</span> <span class="tag-pill">Soldier</span> <span
+                class="tag-pill">LG</span></p>
+            <p><strong>Role:</strong> Defender</p>
+            <p>Battle-scarred and cynical. Prefers steel to magic. Protects Oakhaven from the fallout.</p>
+            <div class="rumour-box">"Magmin are attracted to the scent of the weeping trees."</div>
+          </div>
+        </div>
+
+        <!-- Thrum Ironfoot -->
+        <div class="character-card">
+          <div class="character-header">Thrum Ironfoot</div>
+          <div class="character-image-container">
+            <div class="character-placeholder">Image Unavailable</div>
+          </div>
+          <div class="character-body">
+            <p><span class="tag-pill">Dwarf</span> <span class="tag-pill">Artisan</span> <span
+                class="tag-pill">NG</span></p>
+            <p><strong>Role:</strong> Blacksmith</p>
+            <p>Talks to his hammers. Knows the legend of the Ancient Hammers needed to re-bind the dragon.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- BESTIARY -->
+    <section id="bestiary">
+      <h2>Bestiary & Encounters</h2>
+
+      <!-- Magmin -->
+      <div class="stat-block">
+        <h3>Magmin</h3>
+        <div class="type">Small elemental, chaotic neutral</div>
+        <hr class="tapered-rule">
+        <div class="stat-row"><strong>AC:</strong> 14 (natural armor) | <strong>HP:</strong> 9 (2d6 + 2) |
+          <strong>Speed:</strong> 30 ft.</div>
+        <div class="abilities">
+          <div class="ability-score">STR <span>7 (-2)</span></div>
+          <div class="ability-score">DEX <span>15 (+2)</span></div>
+          <div class="ability-score">CON <span>12 (+1)</span></div>
+          <div class="ability-score">INT <span>8 (-1)</span></div>
+          <div class="ability-score">WIS <span>11 (+0)</span></div>
+          <div class="ability-score">CHA <span>10 (+0)</span></div>
+        </div>
+        <hr class="tapered-rule">
+        <p><strong>Death Burst:</strong> Explodes on death (2d6 fire damage, DC 11 Dex save).</p>
+        <p><strong>Ignited Illumination:</strong> Sheds light when ablaze.</p>
+        <p class="action-name">Actions</p>
+        <p><strong>Touch:</strong> +4 to hit. Hit: 7 (2d4+2) fire damage + ignite.</p>
+      </div>
+
+      <!-- Steam Mephit Swarm -->
+      <div class="stat-block">
+        <h3>Steam Mephit Swarm</h3>
+        <div class="type">Medium swarm of tiny elementals, neutral evil</div>
+        <hr class="tapered-rule">
+        <div class="stat-row"><strong>AC:</strong> 12 | <strong>HP:</strong> 22 (5d8) | <strong>Speed:</strong> 5 ft.,
+          fly 30 ft.</div>
+        <div class="abilities">
+          <div class="ability-score">STR <span>3 (-4)</span></div>
+          <div class="ability-score">DEX <span>13 (+1)</span></div>
+          <div class="ability-score">CON <span>10 (+0)</span></div>
+          <div class="ability-score">INT <span>1 (-5)</span></div>
+          <div class="ability-score">WIS <span>7 (-2)</span></div>
+          <div class="ability-score">CHA <span>1 (-5)</span></div>
+        </div>
+        <hr class="tapered-rule">
+        <p><strong>Swarm:</strong> Can occupy another creature's space. Resistant to Fire.</p>
+        <p class="action-name">Actions</p>
+        <p><strong>Scalding Mist:</strong> Auto-hit in space. 10 (4d4) cold damage (steam), or 5 (2d4) if HP &lt; half.
+        </p>
+      </div>
+
+      <!-- Hell Hound -->
+      <div class="stat-block">
+        <h3>Hell Hound</h3>
+        <div class="type">Medium elemental, lawful evil</div>
+        <hr class="tapered-rule">
+        <div class="stat-row"><strong>AC:</strong> 15 | <strong>HP:</strong> 45 | <strong>Speed:</strong> 50 ft.</div>
+        <hr class="tapered-rule">
+        <p><strong>Pack Tactics:</strong> Advantage if ally is within 5 ft.</p>
+        <p class="action-name">Actions</p>
+        <p><strong>Bite:</strong> +5 to hit. Hit: 1d8+3 piercing + 2d6 fire.</p>
+        <p><strong>Fire Breath (Recharge 5-6):</strong> 15ft cone, 6d6 fire damage (DC 12 Dex).</p>
+      </div>
+
+      <!-- Weakened Ignisvax -->
+      <div class="stat-block" style="border-color: var(--accent-red); background-color: #fff0f0;">
+        <h3>Weakened Ignisvax</h3>
+        <div class="type">Large dragon, chaotic evil</div>
+        <hr class="tapered-rule">
+        <div class="stat-row"><strong>AC:</strong> 15 (Softened) | <strong>HP:</strong> 120 | <strong>Speed:</strong> 40
+          ft., fly 80 ft.</div>
+        <div class="abilities">
+          <div class="ability-score">STR <span>19 (+4)</span></div>
+          <div class="ability-score">DEX <span>10 (+0)</span></div>
+          <div class="ability-score">CON <span>19 (+4)</span></div>
+          <div class="ability-score">INT <span>14 (+2)</span></div>
+          <div class="ability-score">WIS <span>11 (+0)</span></div>
+          <div class="ability-score">CHA <span>15 (+2)</span></div>
+        </div>
+        <hr class="tapered-rule">
+        <p><strong>Drowsy Recovery:</strong> No Breath Weapon until round 5.</p>
+        <p class="action-name">Actions</p>
+        <p><strong>Multiattack:</strong> One Bite, One Claw.</p>
+        <p><strong>Bite:</strong> +7 to hit, 2d10+4 piercing.</p>
+        <p><strong>Claw:</strong> +7 to hit, 2d6+4 slashing.</p>
+      </div>
+
+    </section>
+
+    <!-- TREASURE HOARD -->
+    <section id="loot">
+      <h2>Treasure Hoard</h2>
+
+      <div class="loot-item">
+        <div class="loot-name">Sapphire Orb (Key of Cool Waters)</div>
+        <div class="loot-meta">Wondrous Item, Rare (Requires Attunement)</div>
+        <p>A pulsing blue sphere forged from mountain tears. Grants Fire Resistance. Use charges to cast <em>Fog
+            Cloud</em> or <em>Lesser Restoration</em>. Can be shattered to create a 30ft frost aura that extinguishes
+          fires and suppresses dragon breath.</p>
+      </div>
+
+      <div class="loot-item">
+        <div class="loot-name">Hammer of the Cooling Hand</div>
+        <div class="loot-meta">Warhammer, Rare (Requires Attunement)</div>
+        <p>An ancient forge-hammer. +1 bonus. Deals extra 1d8 cold damage to Fire/Dragon creatures. Grants Advantage on
+          checks to repair the dragon's chains.</p>
+      </div>
+
+      <div class="loot-item">
+        <div class="loot-name">The Azure Savior</div>
+        <div class="loot-meta">Cloak, Uncommon</div>
+        <p>Mayor Pendergast's "fireproof" cloak. Actually a modified <em>Cloak of the Manta Ray</em>. Grants water
+          breathing and swim speed. Reduces the first instance of fire damage each day by 10.</p>
+      </div>
+
+      <div class="loot-item">
+        <div class="loot-name">Embershear</div>
+        <div class="loot-meta">Dagger, Uncommon (Requires Attunement)</div>
+        <p>Recovered from the traitor Elara. +1 bonus. Can shed light and deal +1d4 fire damage. If the wielder has
+          <em>Skulker</em>, they can extinguish it to Hide immediately.</p>
+      </div>
+
+    </section>
+
+  </div>
+
+</body>
+
+</html>

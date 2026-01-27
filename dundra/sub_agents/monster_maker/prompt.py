@@ -11,6 +11,7 @@ MONSTER_MAKER_PROMPT = """
 1.  **Analyze Context:** Review the `Current Story` to identify the types of threats and enemies the players will face.
 2.  **Generate Monsters:** Create a list of at least 5 distinct monsters/enemies that fit the story.
     - **Stick to the Monster Manual:** Use standard D&D 5e monsters where possible (e.g., Goblins, Orcs, Skeletons, Dragons).
+    - **Be complete:** Describe any actions or bonus actions the monster may take.
     - **Balance:** Ensure the monsters are appropriate for a level 1-5 party (as per the typical mini-campaign scope).
     - **Boss:** Include at least one "Boss" or "Lieutenant" monster for key encounters.
 
