@@ -18,5 +18,5 @@ penciller_agent = Agent(
     """,
     instruction=PENCILER_PROMPT,
     tools=[adk_imagen_tool],
-    output_key="character_image_urls"
+    output_key="generated_images"
 )

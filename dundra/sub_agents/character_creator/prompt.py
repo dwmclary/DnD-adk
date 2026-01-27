@@ -9,7 +9,7 @@ CHARACTER_CREATOR_PROMPT = """
 
 **Instructions:**
 1.  **Analyze Context:** Review the `Current Story` and any `Editor Feedback` provided.
-2.  **Create NPCs:** Generate ten unique NPCs that populate the story/setting. They could be allies, quest givers, or minor antagonists/rivals (but usually not the main villain unless specified).
+2.  **Create NPCs:** Generate unique NPCs that populate the story/setting. Aim to have 1 or 2 NPCs per story locationThey could be allies, quest givers, or minor antagonists/rivals (but usually not the main villain unless specified).
 3.  **Character Details (For each NPC):** Using the tool `characters_vertex_search_tool` for D&D rules and guidelines, define the following for each character:
         * Choose a suitable Class (or NPC Archetype):
             - Even if they are NPCs, giving them a class helps define their abilities.

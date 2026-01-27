@@ -13,7 +13,8 @@ import os
 # Vertex AI Search Datastore IDs
 DND_DATASTORE_CHARACTERS_ID = os.getenv("DND_DATASTORE_CHARACTERS_ID")
 DND_DATASTORE_CAMPAIGN_ID = os.getenv("DND_DATASTORE_CAMPAIGN_ID")
-
+print(DND_DATASTORE_CHARACTERS_ID)
+print(DND_DATASTORE_CAMPAIGN_ID)
 if not DND_DATASTORE_CHARACTERS_ID or not DND_DATASTORE_CAMPAIGN_ID:
     # Use dummy values if not set to avoid import errors during testing if tools aren't used
     # But print a warning
@@ -25,11 +26,21 @@ if not DND_DATASTORE_CHARACTERS_ID or not DND_DATASTORE_CAMPAIGN_ID:
         DND_DATASTORE_CAMPAIGN_ID = "full-search-campaign"   # Fallback or dummy
 
 
+
+# Helper to construct full resource name
+def get_datastore_resource_name(datastore_id):
+    if not datastore_id:
+        return None
+    project = os.getenv("GOOGLE_CLOUD_PROJECT")
+    location = os.getenv("GOOGLE_CLOUD_LOCATION", "global")
+    # Using 'default_collection' as standard for Vertex AI Search
+    return f"projects/{project}/locations/{location}/collections/default_collection/dataStores/{datastore_id}"
+
 characters_vertex_search_tool = VertexAiSearchTool(
-    data_store_id=DND_DATASTORE_CHARACTERS_ID
+    data_store_id=get_datastore_resource_name(DND_DATASTORE_CHARACTERS_ID)
 )
 campaign_vertex_search_tool = VertexAiSearchTool(
-    data_store_id=DND_DATASTORE_CAMPAIGN_ID
+    data_store_id=get_datastore_resource_name(DND_DATASTORE_CAMPAIGN_ID)
 )
 
 imagen_tool = ImagenTool()

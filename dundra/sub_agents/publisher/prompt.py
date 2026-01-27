@@ -4,8 +4,10 @@ PUBLISHER_PROMPT = """
 **Context Variables:**
 * - Current Story: {{ current_story }} (String) Markdown formatted campaign story.
 * - Characters Description: {{ characters_brief }} (JSON) Detailed information for each character. 
-* - Characters Images: {{ character_image_urls }} (JSON) URLs for character images, corresponding to the each character in `{{ characters_brief }}`.
+* - Generated Images: {{ generated_images }} (JSON) Object containing `characters` and `monsters` image URLs.
 * - Battle Maps: {{ battle_maps }} (JSON) List of locations and their generated map URLs.
+* - Monsters: {{ monsters_brief }} (JSON) List of monsters and their stat blocks.
+* - Loot: {{ loot_brief }} (JSON) List of magic items and rewards.
 
 **Core Requirements:**
 1.  **HTML Structure & Semantics:**
@@ -27,18 +29,34 @@ PUBLISHER_PROMPT = """
 
 4.  **Battle Maps Section:**
     * Create a section titled "Key Locations & Battle Maps".
+    * Display the world map of the region described in the `Current Story`.
     * For each map in `Battle Maps`:
         * Display the `location_name` as a heading.
         * Display the `description` of the location.
         * Display the map image using `image_url`.
             * Ensure the map image is large enough to be usable (e.g., full width or large modal on click).
             * Add a styled border/frame to the map image.
+    * **Monsters & Encounters Section:**
+    * Create a section titled "Bestiary & Encounters".
+    * For each monster in `Monsters`:
+        * Display the `name` and `type` prominently.
+        * **Image:** Display the monster's image using the corresponding URL from `Generated Images.monsters`.
+            * Look up the image by matching `monster_name` in `Generated Images.monsters` with the monster's `name`.
+            * Make the image a reasonable size (e.g. 300px wide) with a scary border.
+        * Create a compact stat block table or list showing `AC`, `HP`, `Speed`, `Stats` (STR/DEX/etc), `Challenge`.
+        * List `Traits` and `Actions` with their descriptions.
+    * **Loot & Treasures Section:**
+    * Create a section titled "Treasure Hoard".
+    * For each item in `Loot`:
+        * Display the `name` (and `rarity`/`type`).
+        * Display `description` and `mechanics`.
 
 5.  **Character Sections:**
     * Create a distinct section for each character detailed in `Characters Description`.
     * **Layout:** Arrange character sections in a consistent and visually appealing manner (e.g., using flexbox or grid for a gallery if multiple characters, or stacked sections).
     * **Content per Character:**
-        * **Image:** Display the character's image using the corresponding URL from `Characters Images`.
+        * **Image:** Display the character's image using the corresponding URL from `Generated Images.characters`.
+            * Look up the image by matching `character_name` in `Generated Images.characters` with the character's `character_name`.
             * Include descriptive `alt` text for the image (e.g., "Image of [Character Name]").
             * If an image fails to load, ensure a simple text placeholder like "[Character Name - Image Unavailable]" is visible, or a styled placeholder box.
         * **Information Structure:** Present information in a clear, organized format (e.g., using definition lists, styled divs, or sub-sections):
@@ -50,6 +68,8 @@ PUBLISHER_PROMPT = """
             * Equipment and Actions
             * **Rumours:** (New) Display the list of rumours this NPC knows.
         * **Styling:** Apply a consistent "character sheet" feel to each character's presentation
+
+6.  **Write the HTML:** Write the HTML file using the `adk_html_tool` tool to a directory called "generated_stories" with the filename "campaign_and_characters.html".
 
 **Output Format:**
 
