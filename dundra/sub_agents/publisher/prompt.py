@@ -8,6 +8,7 @@ PUBLISHER_PROMPT = """
 * - Battle Maps: {{ battle_maps }} (JSON) List of locations and their generated map URLs.
 * - Monsters: {{ monsters_brief }} (JSON) List of monsters and their stat blocks.
 * - Loot: {{ loot_brief }} (JSON) List of magic items and rewards.
+* - Encounters & Quests: {{ encounters_and_quests }} (JSON) Random encounters and quests.
 
 **Core Requirements:**
 1.  **HTML Structure & Semantics:**
@@ -50,6 +51,22 @@ PUBLISHER_PROMPT = """
     * For each item in `Loot`:
         * Display the `name` (and `rarity`/`type`).
         * Display `description` and `mechanics`.
+
+    * **Random Encounters Section:**
+    * Create a section titled "Random Encounters".
+    * For each entry in `Encounters & Quests.encounters`:
+        * Create a sub-section for the `location_name`.
+        * Create a HTML table or styled list representing the d8 table.
+        * Columns/Fields: Roll (1-8), Type, Description, Reward.
+
+    * **Quests & Rumors Board:**
+    * Create a section titled "Quest Board".
+    * For each quest in `Encounters & Quests.quests`:
+        * Display as a "Quest Card" or bulletin board style entry.
+        * **Title**: `quest_name`
+        * **Source**: `source` (NPC or Town Board)
+        * **Objective**: `objective`
+        * **Rewards**: `reward_gold` and `reward_items` (highlight potions!).
 
 5.  **Character Sections:**
     * Create a distinct section for each character detailed in `Characters Description`.

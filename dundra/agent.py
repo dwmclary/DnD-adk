@@ -8,6 +8,7 @@ from .sub_agents.mapmaker import mapmaker_agent
 from .sub_agents.publisher import publisher_agent
 from .sub_agents.monster_maker import monster_maker_agent
 from .sub_agents.loot_maker import loot_maker_agent
+from .sub_agents.encounter_manager import encounter_manager_agent
 from google.adk.agents.llm_agent import Agent
 from google.adk.agents import LoopAgent, SequentialAgent
 
@@ -30,9 +31,11 @@ story_creation_agent = SequentialAgent(
     name="story_creation_agent",
     description="The story team agent is responsible for creating the story for the D&D mini campaign adventure.",
     sub_agents=[
+
         iterative_story_refinement_agent,
         monster_maker_agent,
         loot_maker_agent,
+        encounter_manager_agent,
         penciller_agent,
         mapmaker_agent,
         publisher_agent
