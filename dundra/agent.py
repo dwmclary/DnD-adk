@@ -35,9 +35,9 @@ story_creation_agent = SequentialAgent(
         iterative_story_refinement_agent,
         monster_maker_agent,
         loot_maker_agent,
-        encounter_manager_agent,
         penciller_agent,
         mapmaker_agent,
+        encounter_manager_agent,
         publisher_agent
     ]
 )
