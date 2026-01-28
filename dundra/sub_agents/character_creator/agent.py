@@ -16,7 +16,7 @@ character_creator_agent = Agent(
     name="character_writer_agent",
     model=os.getenv("MODEL_NAME"),
     description="""
-    Generates pre-made Player Characters (PCs) for the Dungeons and Dragons mini campaign adventure.
+    Generates pre-made Non-Player Characters (NPCs) for the Dungeons and Dragons mini campaign adventure.
     """,
     instruction=CHARACTER_CREATOR_PROMPT,
     tools=[characters_vertex_search_tool],

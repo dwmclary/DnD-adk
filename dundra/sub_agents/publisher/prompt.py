@@ -4,7 +4,11 @@ PUBLISHER_PROMPT = """
 **Context Variables:**
 * - Current Story: {{ current_story }} (String) Markdown formatted campaign story.
 * - Characters Description: {{ characters_brief }} (JSON) Detailed information for each character. 
-* - Characters Images: {{ character_image_urls }} (JSON) URLs for character images, corresponding to the each character in `{{ characters_brief }}`.
+* - Generated Images: {{ generated_images }} (JSON) Object containing `characters` and `monsters` image URLs.
+* - Battle Maps: {{ battle_maps }} (JSON) List of locations and their generated map URLs.
+* - Monsters: {{ monsters_brief }} (JSON) List of monsters and their stat blocks.
+* - Loot: {{ loot_brief }} (JSON) List of magic items and rewards.
+* - Encounters & Quests: {{ encounters_and_quests }} (JSON) Random encounters and quests.
 
 **Core Requirements:**
 1.  **HTML Structure & Semantics:**
@@ -23,12 +27,54 @@ PUBLISHER_PROMPT = """
     * Convert the Markdown content from `Current Story` into well-formed HTML.
     * Use appropriate heading hierarchy (e.g., `<h1>` for the main campaign title derived from `Current Story`, `<h2>` for major story sections, `<h3>` for sub-sections, etc.).
     * Format paragraphs (`<p>`) and other text elements (bold, italics) correctly.
+    * For each location in the `Current Story`, add descriptive sentences for the DM to read to the party,a link to the `Battle Maps` section, and a link to the `Bestiary & Encounters` section if the location is mentioned in the `Bestiary & Encounters` section.
 
-4.  **Character Sections:**
+4.  **Battle Maps Section:**
+    * Create a section titled "Key Locations & Battle Maps".
+    * Display the world map of the region described in the `Current Story`.
+    * For each map in `Battle Maps`:
+        * Display the `location_name` as a heading.
+        * Display the `description` of the location.
+        * Display the map image using `image_url`.
+            * Ensure the map image is large enough to be usable (e.g., full width or large modal on click).
+            * Add a styled border/frame to the map image.
+    * **Monsters & Encounters Section:**
+    * Create a section titled "Bestiary & Encounters".
+    * For each monster in `Monsters`:
+        * Display the `name` and `type` prominently.
+        * **Image:** Display the monster's image using the corresponding URL from `Generated Images.monsters`.
+            * Look up the image by matching `monster_name` in `Generated Images.monsters` with the monster's `name`.
+            * Make the image a reasonable size (e.g. 300px wide) with a scary border.
+        * Create a compact stat block table or list showing `AC`, `HP`, `Speed`, `Stats` (STR/DEX/etc), `Challenge`.
+        * List `Traits` and `Actions` with their descriptions.
+    * **Loot & Treasures Section:**
+    * Create a section titled "Treasure Hoard".
+    * For each item in `Loot`:
+        * Display the `name` (and `rarity`/`type`).
+        * Display `description` and `mechanics`.
+
+    * **Random Encounters Section:**
+    * Create a section titled "Random Encounters".
+    * For each entry in `Encounters & Quests.encounters`:
+        * Create a sub-section for the `location_name`.
+        * Create a HTML table or styled list representing the d8 table.
+        * Columns/Fields: Roll (1-8), Type, Description, Reward.
+
+    * **Quests & Rumors Board:**
+    * Create a section titled "Quest Board".
+    * For each quest in `Encounters & Quests.quests`:
+        * Display as a "Quest Card" or bulletin board style entry.
+        * **Title**: `quest_name`
+        * **Source**: `source` (NPC or Town Board)
+        * **Objective**: `objective`
+        * **Rewards**: `reward_gold` and `reward_items` (highlight potions!).
+
+5.  **Character Sections:**
     * Create a distinct section for each character detailed in `Characters Description`.
     * **Layout:** Arrange character sections in a consistent and visually appealing manner (e.g., using flexbox or grid for a gallery if multiple characters, or stacked sections).
     * **Content per Character:**
-        * **Image:** Display the character's image using the corresponding URL from `Characters Images`.
+        * **Image:** Display the character's image using the corresponding URL from `Generated Images.characters`.
+            * Look up the image by matching `character_name` in `Generated Images.characters` with the character's `character_name`.
             * Include descriptive `alt` text for the image (e.g., "Image of [Character Name]").
             * If an image fails to load, ensure a simple text placeholder like "[Character Name - Image Unavailable]" is visible, or a styled placeholder box.
         * **Information Structure:** Present information in a clear, organized format (e.g., using definition lists, styled divs, or sub-sections):
@@ -38,7 +84,11 @@ PUBLISHER_PROMPT = """
             * Features and Abilities
             * Character Stats and Attributes
             * Equipment and Actions
+            * **Rumours:** (New) Display the list of rumours this NPC knows.
         * **Styling:** Apply a consistent "character sheet" feel to each character's presentation
+
+6.  **Write the HTML:** Write the HTML file using the `Html_Writer_Tool` tool to a directory called "generated_stories" with the filename that matches the title of the story.
+7.  **Be complete:** Do not skip any maps, characters, monsters, loot, encounters, or quests.  Make sure that the HTML file is complete and includes all of the information that was generated by the other agents.
 
 **Output Format:**
 

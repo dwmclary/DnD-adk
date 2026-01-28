@@ -4,19 +4,19 @@ from google.adk import Agent
 
 # Tools from the project
 from ...tools import adk_imagen_tool
-from .prompt import PENCILER_PROMPT
+from .prompt import MAPMAKER_PROMPT
 
 # =============================
 # Agent Definition
 # =============================
 
-penciller_agent = Agent(
-    name="penciller_agent",
+mapmaker_agent = Agent(
+    name="mapmaker_agent",
     model=os.getenv("MODEL_NAME"),
     description="""
-    Generates fantasy character images in a style suitable for Dungeons and Dragons mini campaign adventure illustrations, using Imagen.
+    Generates battle maps for key locations in the Dungeons and Dragons mini campaign adventure using Imagen.
     """,
-    instruction=PENCILER_PROMPT,
+    instruction=MAPMAKER_PROMPT,
     tools=[adk_imagen_tool],
-    output_key="generated_images"
+    output_key="battle_maps"
 )
