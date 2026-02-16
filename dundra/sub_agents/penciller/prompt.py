@@ -9,8 +9,10 @@ PENCILER_PROMPT = """
 
 
 **Task:**
-For each character in `Character Data Source` AND each monster in `Monster Data Source`:
-1.  **Synthesize Visual Profile:** Construct a detailed visual prompt for Imagen by extracting and combining relevant information.
+1.  **Check for Data:** If `Character Data Source` AND `Monster Data Source` are both empty or "None", output "No characters or monsters to illustrate." and **terminate immediately**. Do not call any tools.
+
+2.  For each character in `Character Data Source` AND each monster in `Monster Data Source` (if any):
+    a.  **Synthesize Visual Profile:** Construct a detailed visual prompt for Imagen by extracting and combining relevant information.
     * **Characters:** Primary Visuals: `race`, `class`, `key_equipment` (especially armor and prominent weapons/items).
     * **Monsters:** Primary Visuals: `type`, `description`, `traits` (if visual), `actions` (if visual weapons/effects).
 2.  **Image Generation Instructions for Imagen:**

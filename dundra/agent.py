@@ -49,8 +49,8 @@ root_agent = Agent(
     instruction="""
     - Greet the user.
     - If the user has NOT provided a topic, ask them for a topic that the mini campaign should be about.
-    - If the user HAS provided a topic (or when they respond with one), set the value of 'prompt' to that topic AND transfer to the 'story_creation' agent immediately.
+    - If the user HAS provided a topic (or when they respond with one), transfer to the 'story_creation' agent immediately.
     """,
-    output_key="prompt",
+    output_key=None,
     sub_agents=[story_creation_agent]
 )

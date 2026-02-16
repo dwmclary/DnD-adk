@@ -1,0 +1,52 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+}
+
+.app-header {
+  padding: 1rem 2rem;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-header h1 {
+  font-size: 1.5rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+.highlight {
+  color: var(--accent-color);
+}
+
+.app-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.app-nav button {
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 0.5rem 1rem;
+  border-bottom: 2px solid transparent;
+  border-radius: 4px 4px 0 0;
+}
+
+.app-nav button.active {
+  color: var(--text-primary);
+  border-bottom-color: var(--accent-color);
+  background: var(--bg-tertiary);
+}
+
+.app-main {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
