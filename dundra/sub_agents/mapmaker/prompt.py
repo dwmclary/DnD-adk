@@ -10,8 +10,14 @@ MAPMAKER_PROMPT = """
 1.  **Check for Data:** If `Current Story` is empty or "None", output "No story to map." and **terminate immediately**. Do not call any tools.
 
 2.  **Analyze Context:** Review the `Current Story` to identify key locations (towns, encounter sites, etc.).
+3.  **Image Generation Instructions for Imagen:**
+    * **Prompt Construction:** Create a concise but descriptive text prompt for Imagen for *each entity*. This prompt should be a natural language sentence or series of descriptive phrases.
+4.  **Use the `adk_imagen_tool` tool to generate the image for each entity passing the generated prompt.**
 
-3.  **For each identified location:**
+5.  **Avoid timeouts:** If the image generation times out, wait and try again.  Do not give up.  It may take several attempts to generate the images.
+
+
+6.  **For each identified location:**
     a.  **Construct Prompt:** Create a highly descriptive prompt for a top-down fantasy battle map.
         -   **Perspective:** Top-down view, plan view, or battle map style. Grid lines are optional.
         -   **Details:** Mention terrain, lighting, and key features.
@@ -20,7 +26,7 @@ MAPMAKER_PROMPT = """
     b.  **Generate Image:** Use the `adk_imagen_tool` with the constructed prompt to generate the map image.
     c.  **Avoid timeouts:** If generation times out, wait and try again.
 
-4.  **World Map:**
+7.  **World Map:**
     a.  **Construct Prompt:** Create a prompt for a regional world map based on the story setting.
     b.  **Generate Image:** Use the `adk_imagen_tool` to generate the world map.
 

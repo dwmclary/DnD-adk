@@ -16,6 +16,6 @@ writer_agent = Agent(
     model=os.getenv("MODEL_NAME"),
     description=" Writes the initial draft of the Dungeons and Dragons mini campaign adventure. ",
     instruction=WRITER_PROMPT,
-    tools=[],
+    tools=[campaign_vertex_search_tool],
     output_key="current_story",
 )
