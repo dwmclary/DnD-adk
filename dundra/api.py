@@ -9,6 +9,7 @@ from google.cloud import storage
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
+logging.getLogger("google.adk").setLevel(logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # Initialize GCS client if configured

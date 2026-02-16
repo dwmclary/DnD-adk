@@ -18,7 +18,7 @@ from google.adk.tools import BaseTool, ToolContext
 from google.genai import types
 
 class ImagenTool(BaseTool):
-    def __init__(self, model: str = "imagen-3.0-generate-001", number_of_images: int = 1, output_dir: str = "generated_images"):
+    def __init__(self, model: str = "imagen-3.0-generate-001", number_of_images: int = 1, output_dir: str = "generated_stories/generated_images"):
         super().__init__(
             name="Imagen_Images_Creator",
             description="A tool designed to generate images using Google's Vertex AI Imagen model."
