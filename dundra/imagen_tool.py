@@ -144,7 +144,17 @@ class ImagenTool(BaseTool):
                             print(f"Failed to upload image to GCS: {e}")
                             saved_paths.append(filepath)
                     else:
-                        saved_paths.append(filepath)
+                        # Return relative path if it's inside generated_stories for correct HTML linking
+                        if self.output_dir.startswith("generated_stories/"):
+                             # If output_dir is "generated_stories/generated_images", relpath should be "generated_images/filename"
+                             # relative to "generated_stories"
+                             try:
+                                 rel_path = os.path.relpath(filepath, "generated_stories")
+                                 saved_paths.append(rel_path)
+                             except ValueError:
+                                 saved_paths.append(filepath)
+                        else:
+                            saved_paths.append(filepath)
             
             if not saved_paths:
                 return "No images generated."

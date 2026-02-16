@@ -30,6 +30,17 @@ echo "Project ID: $PROJECT_ID"
 echo -e "${GREEN}Building image...${NC}"
 gcloud builds submit --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME" .
 
+# Load environment variables from dundra/.env
+if [ -f "dundra/.env" ]; then
+    echo "Loading environment variables from dundra/.env..."
+    export $(grep -v '^#' dundra/.env | xargs)
+fi
+
+# Map GOOGLE_CLOUD_STORAGE_BUCKET to GCS_BUCKET_NAME if not already set
+if [ -z "$GCS_BUCKET_NAME" ] && [ -n "$GOOGLE_CLOUD_STORAGE_BUCKET" ]; then
+    export GCS_BUCKET_NAME="$GOOGLE_CLOUD_STORAGE_BUCKET"
+fi
+
 # Deploy to Cloud Run
 echo -e "${GREEN}Deploying to Cloud Run...${NC}"
 gcloud run deploy "$SERVICE_NAME" \
@@ -37,6 +48,6 @@ gcloud run deploy "$SERVICE_NAME" \
     --platform managed \
     --region "$REGION" \
     --allow-unauthenticated \
-    --set-env-vars "GCS_BUCKET_NAME=${GCS_BUCKET_NAME}"
+    --set-env-vars "GCS_BUCKET_NAME=${GCS_BUCKET_NAME},MODEL_NAME=${MODEL_NAME},DND_DATASTORE_CHARACTERS_ID=${DND_DATASTORE_CHARACTERS_ID},DND_DATASTORE_CAMPAIGN_ID=${DND_DATASTORE_CAMPAIGN_ID},GOOGLE_GENAI_USE_VERTEXAI=${GOOGLE_GENAI_USE_VERTEXAI},GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT},GOOGLE_CLOUD_LOCATION=${GOOGLE_CLOUD_LOCATION}"
 
 echo -e "${GREEN}Deployment Complete!${NC}"
