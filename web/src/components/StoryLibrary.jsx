@@ -7,6 +7,7 @@ export default function StoryLibrary() {
   const [stories, setStories] = useState([])
   const [error, setError] = useState(null)
   const [selectedStory, setSelectedStory] = useState(null)
+  const [iframeToken, setIframeToken] = useState(null)
 
   useEffect(() => {
     fetchStories()
@@ -31,7 +32,7 @@ export default function StoryLibrary() {
   return (
     <div className="library-container">
       <div className="library-header">
-        <h2>Adventures</h2>
+        <h2>Adventures (v2)</h2>
         <button onClick={fetchStories} className="refresh-btn">Refresh</button>
       </div>
       
@@ -50,9 +51,13 @@ export default function StoryLibrary() {
             </div>
             <div className="story-actions">
               <button
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.preventDefault()
-                  setSelectedStory(story)
+                  if (currentUser) {
+                    const token = await currentUser.getIdToken()
+                    setIframeToken(token)
+                    setSelectedStory(story)
+                  }
                 }}
                 className="view-btn"
                 style={{ width: '100%', border: 'none', cursor: 'pointer' }}
@@ -67,19 +72,26 @@ export default function StoryLibrary() {
         )}
       </div>
 
-      {selectedStory && (
-        <div className="story-modal-overlay" onClick={() => setSelectedStory(null)}>
+      {selectedStory && iframeToken && (
+        <div className="story-modal-overlay" onClick={() => { setSelectedStory(null); setIframeToken(null); }}>
           <div className="story-modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h3>{selectedStory.name}</h3>
-              <button className="close-modal-btn" onClick={() => setSelectedStory(null)}>×</button>
+              <button className="close-modal-btn" onClick={() => { setSelectedStory(null); setIframeToken(null); }}>×</button>
             </div>
             <div className="story-iframe-container">
+              {/* We need to append the token to the URL for the iframe to have access */}
               <iframe
-                src={selectedStory.url}
+                key={selectedStory.name}
+                src={`${selectedStory.url}?token=${iframeToken}`}
                 className="story-iframe"
                 title={selectedStory.name}
               />
+              <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                <a href={`${selectedStory.url}?token=${iframeToken}`} target="_blank" rel="noopener noreferrer" style={{ color: 'white' }}>
+                  Open in New Tab (Debug)
+                </a>
+              </div>
             </div>
           </div>
         </div>
