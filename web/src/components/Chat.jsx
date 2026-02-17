@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 import './Chat.css'
 
 export default function Chat() {
+  const { currentUser } = useAuth()
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -31,9 +33,13 @@ export default function Chat() {
       console.log(`Creating session: ${url}`);
 
       // Send no body, just like the working curl command
+      const token = await currentUser.getIdToken();
       const res = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       if (res.ok || res.status === 400) {
@@ -76,10 +82,12 @@ export default function Chat() {
 
       console.log("Sending payload to /run_sse:", JSON.stringify(payload, null, 2));
 
+      const token = await currentUser.getIdToken();
       const response = await fetch('/run_sse', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(payload),
       })

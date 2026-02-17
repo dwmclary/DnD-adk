@@ -26,6 +26,26 @@ if [ -z "$PROJECT_ID" ]; then
 fi
 echo "Project ID: $PROJECT_ID"
 
+# Prepare environment variables from web/.env
+FIREBASE_ENV_VARS=""
+if [ -f "web/.env" ]; then
+    echo "Loading environment variables from web/.env..."
+    while IFS='=' read -r key value; do
+        # Skip comments and empty lines
+        if [[ $key =~ ^#.* ]] || [[ -z $key ]]; then
+            continue
+        fi
+        # Map VITE_FIREBASE_ to FIREBASE_
+        if [[ $key == VITE_FIREBASE_* ]]; then
+            # Strip VITE_ prefix
+            NEW_KEY=${key#VITE_}
+            FIREBASE_ENV_VARS="${FIREBASE_ENV_VARS}${NEW_KEY}=${value},"
+        fi
+    done < "web/.env"
+    # Remove trailing comma
+    FIREBASE_ENV_VARS=${FIREBASE_ENV_VARS%,}
+fi
+
 # Build the image using Cloud Build
 echo -e "${GREEN}Building image...${NC}"
 gcloud builds submit --tag "gcr.io/$PROJECT_ID/$SERVICE_NAME" .
@@ -47,7 +67,7 @@ gcloud run deploy "$SERVICE_NAME" \
     --image "gcr.io/$PROJECT_ID/$SERVICE_NAME" \
     --platform managed \
     --region "$REGION" \
-    --allow-unauthenticated \
-    --set-env-vars "GCS_BUCKET_NAME=${GCS_BUCKET_NAME},MODEL_NAME=${MODEL_NAME},DND_DATASTORE_CHARACTERS_ID=${DND_DATASTORE_CHARACTERS_ID},DND_DATASTORE_CAMPAIGN_ID=${DND_DATASTORE_CAMPAIGN_ID},GOOGLE_GENAI_USE_VERTEXAI=${GOOGLE_GENAI_USE_VERTEXAI},GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT},GOOGLE_CLOUD_LOCATION=${GOOGLE_CLOUD_LOCATION}"
+    --no-allow-unauthenticated \
+    --set-env-vars "GCS_BUCKET_NAME=${GCS_BUCKET_NAME},MODEL_NAME=${MODEL_NAME},DND_DATASTORE_CHARACTERS_ID=${DND_DATASTORE_CHARACTERS_ID},DND_DATASTORE_CAMPAIGN_ID=${DND_DATASTORE_CAMPAIGN_ID},GOOGLE_GENAI_USE_VERTEXAI=${GOOGLE_GENAI_USE_VERTEXAI},GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT},GOOGLE_CLOUD_LOCATION=${GOOGLE_CLOUD_LOCATION},${FIREBASE_ENV_VARS}"
 
 echo -e "${GREEN}Deployment Complete!${NC}"

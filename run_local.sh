@@ -51,5 +51,16 @@ if [ -f ".env" ]; then
     export $(grep -v '^#' .env | xargs)
 fi
 
+# Load and map web/.env to FIREBASE_ vars for local dev
+if [ -f "web/.env" ]; then
+    echo -e "${GREEN}Loading and mapping web/.env variables...${NC}"
+    while IFS='=' read -r key value; do
+        if [[ $key == VITE_FIREBASE_* ]]; then
+            NEW_KEY=${key#VITE_}
+            export ${NEW_KEY}=${value}
+        fi
+    done < "web/.env"
+fi
+
 # Run with hot reload
 uvicorn dundra.api:app --reload --host 0.0.0.0 --port 8000

@@ -1,11 +1,12 @@
 import os
 import logging
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from google.adk.cli.fast_api import get_fast_api_app
 from google.cloud import storage
+from dundra.auth import verify_user
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -38,7 +39,41 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/api/stories")
+# Middleware to protect ADK routes
+@app.middleware("http")
+async def auth_middleware(request: Request, call_next):
+    # List of paths to protect
+    protected_paths = ["/run_sse", "/active_agents"]
+    
+    # Check if path starts with any protected path
+    is_protected = any(request.url.path.startswith(path) for path in protected_paths)
+    
+    if is_protected:
+        auth_header = request.headers.get("Authorization")
+        if not auth_header or not auth_header.startswith("Bearer "):
+            return JSONResponse(status_code=401, content={"detail": "Missing or invalid Authorization header"})
+        
+        token = auth_header.split(" ")[1]
+        try:
+             # We manually verify here because we are in middleware
+             # and can't easily use Depends
+             from firebase_admin import auth
+             decoded_token = auth.verify_id_token(token)
+             email = decoded_token.get("email")
+             
+             if email != "dan.mcclary@gmail.com":
+                 return JSONResponse(status_code=403, content={"detail": f"Access denied for {email}"})
+                 
+             # Store user in request state if needed
+             request.state.user = decoded_token
+        except Exception as e:
+             logger.error(f"Middleware auth failed: {e}")
+             return JSONResponse(status_code=401, content={"detail": "Authentication failed"})
+
+    response = await call_next(request)
+    return response
+
+@app.get("/api/stories", dependencies=[Depends(verify_user)])
 async def list_stories():
     """List generated stories from GCS bucket or local directory."""
     stories = []
@@ -78,6 +113,22 @@ async def list_stories():
     stories.sort(key=lambda x: x.get("created") or 0, reverse=True)
     return stories
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+@app.get("/api/config")
+async def get_config():
+    """Returns the Firebase configuration for the frontend."""
+    return {
+        "apiKey": os.getenv("FIREBASE_API_KEY"),
+        "authDomain": os.getenv("FIREBASE_AUTH_DOMAIN"),
+        "projectId": os.getenv("FIREBASE_PROJECT_ID"),
+        "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET"),
+        "messagingSenderId": os.getenv("FIREBASE_MESSAGING_SENDER_ID"),
+        "appId": os.getenv("FIREBASE_APP_ID")
+    }
+
 # Serve local stories if needed
 if os.path.exists("generated_stories"):
     app.mount("/stories", StaticFiles(directory="generated_stories"), name="stories")
@@ -87,7 +138,3 @@ if os.path.exists("generated_stories"):
 frontend_dist = "web/dist"
 if os.path.exists(frontend_dist):
     app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")
-
-@app.get("/health")
-async def health():
-    return {"status": "ok"}

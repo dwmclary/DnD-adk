@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 import './StoryLibrary.css'
 
 export default function StoryLibrary() {
+  const { currentUser } = useAuth()
   const [stories, setStories] = useState([])
   const [error, setError] = useState(null)
 
@@ -11,7 +13,12 @@ export default function StoryLibrary() {
 
   const fetchStories = async () => {
     try {
-      const res = await fetch('/api/stories')
+      const token = await currentUser.getIdToken();
+      const res = await fetch('/api/stories', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
       if (!res.ok) throw new Error("Failed to fetch stories")
       const data = await res.json()
       setStories(data)

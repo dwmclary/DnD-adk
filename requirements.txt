@@ -13,3 +13,4 @@ uvicorn
 python-multipart
 # Added for ADK to function properly
 tenacity
+firebase-admin
