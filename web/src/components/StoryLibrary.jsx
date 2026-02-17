@@ -6,6 +6,7 @@ export default function StoryLibrary() {
   const { currentUser } = useAuth()
   const [stories, setStories] = useState([])
   const [error, setError] = useState(null)
+  const [selectedStory, setSelectedStory] = useState(null)
 
   useEffect(() => {
     fetchStories()
@@ -48,9 +49,16 @@ export default function StoryLibrary() {
                 </div>
             </div>
             <div className="story-actions">
-                <a href={story.url} target="_blank" rel="noopener noreferrer" className="view-btn">
+              <button
+                onClick={(e) => {
+                  e.preventDefault()
+                  setSelectedStory(story)
+                }}
+                className="view-btn"
+                style={{ width: '100%', border: 'none', cursor: 'pointer' }}
+              >
                     Read Story
-                </a>
+              </button>
             </div>
           </div>
         ))}
@@ -58,6 +66,25 @@ export default function StoryLibrary() {
             <p className="no-stories">No stories found. Generate one in the Chat!</p>
         )}
       </div>
+
+      {selectedStory && (
+        <div className="story-modal-overlay" onClick={() => setSelectedStory(null)}>
+          <div className="story-modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{selectedStory.name}</h3>
+              <button className="close-modal-btn" onClick={() => setSelectedStory(null)}>×</button>
+            </div>
+            <div className="story-iframe-container">
+              <iframe
+                src={selectedStory.url}
+                className="story-iframe"
+                title={selectedStory.name}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
+
   )
 }

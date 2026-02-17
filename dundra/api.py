@@ -1,7 +1,8 @@
 import os
+from datetime import datetime
 import logging
 from fastapi import FastAPI, Request, Depends, HTTPException
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from google.adk.cli.fast_api import get_fast_api_app
@@ -14,7 +15,7 @@ logging.getLogger("google.adk").setLevel(logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # Initialize GCS client if configured
-BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
+BUCKET_NAME = os.getenv("GCS_BUCKET_NAME") or os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET")
 storage_client = None
 if BUCKET_NAME:
     try:
@@ -106,12 +107,25 @@ async def list_stories():
                     "name": filename,
                     "url": f"/stories/{filename}", # Local serve path
                     "source": "local",
-                    "created": os.path.getmtime(filepath)
+                    "created": datetime.fromtimestamp(os.path.getmtime(filepath)).isoformat()
                 })
     
     # Sort by creation time (descending)
     stories.sort(key=lambda x: x.get("created") or 0, reverse=True)
     return stories
+
+@app.get("/api/stories/{filename}")
+async def get_story_content(filename: str):
+    """Proxy story content from local storage."""
+    # check local first
+    local_path = os.path.join("generated_stories", filename)
+    if os.path.exists(local_path):
+        return FileResponse(local_path)
+
+    # For GCS, we rely on public access via direct URL in list_stories
+    # So if we are here, it's either local or not found
+    
+    raise HTTPException(status_code=404, detail="Story not found")
 
 @app.get("/health")
 async def health():
