@@ -2,9 +2,7 @@ import os
 import uuid
 import base64
 from typing import Optional, Any
-
-from crewai.tools import BaseTool
-from pydantic import Field, PrivateAttr
+from google.cloud import storage
 
 try:
     from google import genai
@@ -16,26 +14,23 @@ except ImportError:
     types = None
     Image = None
 
-class ImagenTool(BaseTool):
-    name: str = "Imagen_Images_Creator"
-    description: str = "A tool designed to generate images using Google's Vertex AI Imagen model."
-    model: str = Field(default="imagen-3.0-generate-001", description="The Imagen model to use.")
-    number_of_images: int = Field(default=1, description="Number of images to generate.")
-    output_dir: str = Field(default="generated_images", description="Directory to save generated images.")
-    
-    _client: Optional[Any] = PrivateAttr(default=None)
+from google.adk.tools import BaseTool, ToolContext
+from google.genai import types
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+class ImagenTool(BaseTool):
+    def __init__(self, model: str = "imagen-3.0-generate-001", number_of_images: int = 1, output_dir: str = "generated_stories/generated_images"):
+        super().__init__(
+            name="Imagen_Images_Creator",
+            description="A tool designed to generate images using Google's Vertex AI Imagen model."
+        )
+        self.model = model
+        self.number_of_images = number_of_images
+        self.output_dir = output_dir
+        self.bucket_name = os.getenv("GCS_BUCKET_NAME")
+        
         if genai is None or Image is None:
             raise ImportError("Please install `google-genai` and `Pillow` packages to use ImagenTool.")
         
-        # When using Vertex AI, keys are not used, but ADC (Application Default Credentials).
-        # However, google-genai client might still accept api_key if we were using AI Studio.
-        # For Vertex AI, we rely on the environment being configured (GOOGLE_GENAI_USE_VERTEXAI=TRUE)
-        # and implicit credentials or explicit project/location which google-genai picks up from env.
-        
-        # We initialize the client without args to let it pick up defaults from env
         self._client = genai.Client(
             vertexai=True, 
             project=os.environ.get("GOOGLE_CLOUD_PROJECT"), 
@@ -45,14 +40,64 @@ class ImagenTool(BaseTool):
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 
-    def _run(self, prompt: str) -> str:
+    def _get_declaration(self) -> types.FunctionDeclaration:
+        return types.FunctionDeclaration(
+            name=self.name,
+            description=self.description,
+            parameters=types.Schema(
+                type="OBJECT",
+                properties={
+                    "prompt": types.Schema(
+                        type="STRING",
+                        description="The prompt to generate an image for."
+                    )
+                },
+                required=["prompt"]
+            )
+        )
+
+    async def run_async(self, args: dict[str, Any], tool_context: ToolContext) -> str:
+        # Check if 'prompt' is in args, handle case sensitivity or missing args if needed
+        # The key might be 'prompt' or match the schema property name. 
+        prompt = args.get("prompt")
+        if not prompt:
+             return "Error: No prompt provided."
+        return self.run(prompt)
+
+    def run(self, prompt: str) -> str:
         """
-        Generates an image based on the prompt and saves it to disk.
-        Returns the path to the saved image.
+        Generates an image based on the prompt and saves it to disk and optionally uploads to GCS.
+        Returns the path or URL to the saved image.
         """
-        try:
-            print(f"Generating image for prompt: {prompt} with model {self.model}")
+        import tenacity
+        from google.api_core import exceptions as google_exceptions
+        
+        # Retry configuration: wait exponentially, up to 60 seconds, retry on ResourceExhausted or ServiceUnavailable
+        # We also check for "429" or "Reason: 429" in the exception string in case of wrapped errors.
+        def _is_retryable_error(exception):
+            if isinstance(exception, (google_exceptions.ResourceExhausted, google_exceptions.ServiceUnavailable, google_exceptions.TooManyRequests)):
+                return True
+            msg = str(exception).lower()
+            return "429" in msg or "resourceexhausted" in msg or "quota" in msg or "too many requests" in msg
+
+        @tenacity.retry(
+            wait=tenacity.wait_exponential(multiplier=2, min=2, max=60),
+            stop=tenacity.stop_after_attempt(5),
+            retry=tenacity.retry_if_exception(_is_retryable_error),
+            reraise=True
+        )
+        def _generate_with_retry():
+            print(f"Generating image for prompt: '{prompt}' with model {self.model}")
             
+            # Debug: print config
+            try:
+                config_obj = types.GenerateImagesConfig(
+                    number_of_images=self.number_of_images,
+                )
+                print(f"Debug: Config object: {config_obj}")
+            except Exception as e:
+                print(f"Debug: Error creating config object: {e}")
+
             # Using Vertex AI Imagen API (generate_images)
             response = self._client.models.generate_images(
                 model=self.model,
@@ -61,10 +106,23 @@ class ImagenTool(BaseTool):
                     number_of_images=self.number_of_images,
                 )
             )
+            return response
+
+        try:
+            response = _generate_with_retry()
             
             saved_paths = []
             
             if response.generated_images:
+                storage_client = None
+                bucket = None
+                if self.bucket_name:
+                    try:
+                        storage_client = storage.Client()
+                        bucket = storage_client.bucket(self.bucket_name)
+                    except Exception as e:
+                        print(f"Failed to initialize GCS client: {e}")
+
                 for generated_image in response.generated_images:
                     image_bytes = generated_image.image.image_bytes
                     
@@ -74,7 +132,29 @@ class ImagenTool(BaseTool):
                     with open(filepath, "wb") as f:
                         f.write(image_bytes)
                     
-                    saved_paths.append(filepath)
+                    # Upload to GCS if configured
+                    if bucket:
+                        try:
+                            blob = bucket.blob(f"images/{filename}")
+                            blob.upload_from_filename(filepath)
+                            # blob.make_public() # Optional
+                            gcs_url = f"https://storage.googleapis.com/{self.bucket_name}/images/{filename}"
+                            saved_paths.append(gcs_url)
+                        except Exception as e:
+                            print(f"Failed to upload image to GCS: {e}")
+                            saved_paths.append(filepath)
+                    else:
+                        # Return relative path if it's inside generated_stories for correct HTML linking
+                        if self.output_dir.startswith("generated_stories/"):
+                             # If output_dir is "generated_stories/generated_images", relpath should be "generated_images/filename"
+                             # relative to "generated_stories"
+                             try:
+                                 rel_path = os.path.relpath(filepath, "generated_stories")
+                                 saved_paths.append(rel_path)
+                             except ValueError:
+                                 saved_paths.append(filepath)
+                        else:
+                            saved_paths.append(filepath)
             
             if not saved_paths:
                 return "No images generated."
@@ -82,4 +162,14 @@ class ImagenTool(BaseTool):
             return "\n".join(saved_paths)
 
         except Exception as e:
+            import traceback
+            traceback.print_exc() # Print full traceback for debugging 400 errors
             return f"Error generating image: {str(e)}"
+
+    def __call__(self, *args, **kwargs):
+        # Support calling as specific method or just run
+        if 'prompt' in kwargs:
+            return self.run(kwargs['prompt'])
+        if len(args) > 0:
+            return self.run(args[0])
+        return "Error: No prompt provided."

@@ -5,26 +5,24 @@ PENCILER_PROMPT = """
 
 **Context:**
 - Character Data Source: {{ characters_brief }}
-- Monster Data Source: {{ monsters_brief }}
+
 
 
 **Task:**
-For each character in `Character Data Source` AND each monster in `Monster Data Source`:
-1.  **Synthesize Visual Profile:** Construct a detailed visual prompt for Imagen by extracting and combining relevant information.
+1.  **Check for Data:** If `Character Data Source` is empty or "None", output "No characters or monsters to illustrate." and **terminate immediately**. Do not call any tools.
+
+2.  For each character in `Character Data Source` (if any):
+    a.  **Synthesize Visual Profile:** Construct a detailed visual prompt for Imagen by extracting and combining relevant information.
     * **Characters:** Primary Visuals: `race`, `class`, `key_equipment` (especially armor and prominent weapons/items).
-    * **Monsters:** Primary Visuals: `type`, `description`, `traits` (if visual), `actions` (if visual weapons/effects).
-2.  **Image Generation Instructions for Imagen:**
+3.  **Image Generation Instructions for Imagen:**
     * **Prompt Construction:** Create a concise but descriptive text prompt for Imagen for *each entity*. This prompt should be a natural language sentence or series of descriptive phrases.
         The entity should appear [adjective from personality/description, e.g., 'determined', 'terrifying', 'slimy']."
     * **No Embedded Text:** Do **NOT** embed any text (names, stats, etc.) directly into the image.
-3.  **Use the `adk_imagen_tool` tool to generate the image for each entity passing the generated prompt.**
-4.  **Avoid timeouts:** If the image generation times out, wait and try again.  Do not give up.  It may take several attempts to generate the images.
+4.  **Use the `adk_imagen_tool` tool to generate the image for each entity passing the generated prompt.**
+5.  **Avoid timeouts:** If the image generation times out, wait and try again.  Do not give up.  It may take several attempts to generate the images.
 
     
 **Output**
 -   Return a JSON object with two keys: `characters` and `monsters`.
 -   `characters`: Use the same format as before (array of objects with `character_name` and `image_url`).
--   `monsters`: An array of objects, where each object contains:
-    * `monster_name`: The `name` of the monster.
-    * `image_url`: The URL of the generated monster image.
 """

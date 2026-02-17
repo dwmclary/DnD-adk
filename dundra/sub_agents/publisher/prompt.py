@@ -15,6 +15,7 @@ PUBLISHER_PROMPT = """
     * Generate a single, valid HTML5 document.
     * The page title (`<title>`) should be the title of the campaign, derived from `Current Story`.
     * Ensure the page is responsive to different screen sizes.
+    * Image tags should reference the path "generated_images/" for images, not "generated_stories/generated_images"
 
 2.  **Styling:**
     * Generate D&D-themed CSS. Aim for a look and feel reminiscent of classic D&D books (e.g., parchment or dark textured backgrounds, thematic borders, potentially scroll-like elements).

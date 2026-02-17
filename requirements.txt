@@ -1,11 +1,16 @@
 # Add specific versions if known or required
-google-cloud-aiplatform[adk,agent-engines]==1.93.0
-google-adk
-google-genai
+google-cloud-aiplatform[adk,agent-engines]>=1.137.0
+google-adk>=1.25.0
+google-genai>=1.63.0
 deprecated
 cloudpickle==3.1.1
-crewai
-crewai-tools
 pydantic==2.11.3
 Pillow
 python-dotenv
+google-cloud-storage
+fastapi
+uvicorn
+python-multipart
+# Added for ADK to function properly
+tenacity
+firebase-admin

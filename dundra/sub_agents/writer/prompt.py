@@ -7,7 +7,8 @@ WRITER_PROMPT = """
 - Editor Feedback: {{ editor_feedback? }}
 
 **Instructions:**
-1.  **Create a Mini-Campaign:** Develop a compelling three-chapter D&D adventure based on the User Prompt.
+1.  **Analyze Context:** Read the conversation history to identify the User's desired topic or theme for the adventure.
+2.  **Create a Mini-Campaign:** Develop a compelling three-chapter D&D adventure based on that topic.
 2.  **Incorporate Feedback:** If Editor Feedback is provided, revise the story accordingly to improve it.
 3.  **Use Tools:** Utilize the 'campaign_vertex_search_tool' to gather information on creating mini-campaigns if needed.
 4.  **Required Content:** The adventure book must include:

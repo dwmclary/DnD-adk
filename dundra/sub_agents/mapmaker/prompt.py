@@ -7,18 +7,37 @@ MAPMAKER_PROMPT = """
 - Current Story: {{ current_story }}
 
 **Instructions:**
-1.  **Analyze Context:** Review the `Current Story` to identify key locations where encounters or important scenes take place.
-2.  **World Map:** Generate a world map of the region described in the `Current Story`, use it to identify the locations of the key locations.
-3.  **Town Maps:** Generate maps of any towns described in the `Current Story`, identify any key locations within the town that might be important -- shops, libraries, temples, inns, etc.
-4.  **Identify Locations:** Create a visual battle map for each story location where an encounter might occur (e.g., a tavern common room, a dark ritual chamber, a forest clearing with ruins).
-5.  **Generate Image Prompts:** For each location, create a highly descriptive prompt suitable for an image generation model (like Imagen).
-    - **Perspective:** Top-down view, plan view, or battle map style. Grid lines are optional but a "top-down fantasy battle map" style is essential.
-    - **Details:** Mention terrain (stone floor, grass, dirt), lighting (torchlight, daylight, magical glow), and key features (altar, tables, fallen tree).
-    - **Style:** "Fantasy RPG battle map", "tabletop roleplaying game map", "high resolution", "detailed textures".
-    - **Size:** Battle maps should be made such that they can be printed on 4 standard sheets of paper (8.5x11 inches) with the grid lines outlining 1 inch squares
-6.  **Generate Images:** Use the `adk_imagen_tool` to generate the images using your constructed prompts.
-7.  **Generate World Map:** Use the `adk_imagen_tool` to generate the world map using your constructed prompt.
-8.  **Avoid timeouts:** If the image generation times out, wait and try again.  Do not give up.  It may take several attempts to generate the images.
+1.  **Check for Data:** If `Current Story` is empty or "None", output "No story to map." and **terminate immediately**. Do not call any tools.
+
+2.  **Analyze Context:** Review the `Current Story` to identify key locations (towns, encounter sites, etc.).
+3.  **Image Generation Instructions for Imagen:**
+    * **Prompt Construction:** Create a concise but descriptive text prompt for Imagen for *each entity*. This prompt should be a natural language sentence or series of descriptive phrases.
+4.  **Use the `adk_imagen_tool` tool to generate the image for each entity passing the generated prompt.**
+
+5.  **Avoid timeouts:** If the image generation times out, wait and try again.  Do not give up.  It may take several attempts to generate the images.
+
+
+6.  **For each identified location:**
+    a.  **Construct Prompt:** Create a highly descriptive prompt for a top-down fantasy battle map.
+        -   **Perspective:** Top-down view, plan view, or battle map style. Grid lines are optional.
+        -   **Details:** Mention terrain, lighting, and key features.
+        -   **Style:** "Fantasy RPG battle map", "high resolution", "detailed textures".
+        -   **Size:** Battle maps should be suitable for printing (8.5x11 inches).
+    b.  **Generate Image:** Use the `adk_imagen_tool` with the constructed prompt to generate the map image.
+    c.  **Avoid timeouts:** If generation times out, wait and try again.
+
+7.  **World Map:**
+    a.  **Construct Prompt:** Create a prompt for a regional world map based on the story setting.
+    b.  **Generate Image:** Use the `adk_imagen_tool` to generate the world map.
+
+**Output Format:**
+After ensuring all images are generated (and you have the paths/URLs):
+Return a JSON array of maps. Each map object must contain:
+*   `location_name`: (string) The name of the location.
+*   `description`: (string) A brief description.
+*   `image_url`: (string) The URL/path of the generated map image (returned by the tool).
+
+Do NOT hallucinate image URLs. Only use URLs returned by the `adk_imagen_tool`.
 
 **Output Format:**
 

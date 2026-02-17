@@ -1,9 +1,9 @@
 # Google ADK imports
 from google.adk.tools import VertexAiSearchTool
-from google.adk.tools.crewai_tool import CrewaiTool
 
 # Third-party tools
 from dundra.imagen_tool import ImagenTool
+from dundra.html_writer_tool import HtmlWriterTool
 
 # =============================
 # Tool Instantiation
@@ -13,19 +13,15 @@ import os
 # Vertex AI Search Datastore IDs
 DND_DATASTORE_CHARACTERS_ID = os.getenv("DND_DATASTORE_CHARACTERS_ID")
 DND_DATASTORE_CAMPAIGN_ID = os.getenv("DND_DATASTORE_CAMPAIGN_ID")
-print(DND_DATASTORE_CHARACTERS_ID)
-print(DND_DATASTORE_CAMPAIGN_ID)
+print(f"Characters Datastore ID: {DND_DATASTORE_CHARACTERS_ID}")
+print(f"Campaign Datastore ID: {DND_DATASTORE_CAMPAIGN_ID}")
+
 if not DND_DATASTORE_CHARACTERS_ID or not DND_DATASTORE_CAMPAIGN_ID:
-    # Use dummy values if not set to avoid import errors during testing if tools aren't used
-    # But print a warning
     print("WARNING: DND_DATASTORE_CHARACTERS_ID or DND_DATASTORE_CAMPAIGN_ID not set.")
-    # We might want to set them to something that won't crash immediately but fails if used
     if not DND_DATASTORE_CHARACTERS_ID:
-        DND_DATASTORE_CHARACTERS_ID = "full-search-characters" # Fallback or dummy
+        DND_DATASTORE_CHARACTERS_ID = "full-search-characters" 
     if not DND_DATASTORE_CAMPAIGN_ID:
-        DND_DATASTORE_CAMPAIGN_ID = "full-search-campaign"   # Fallback or dummy
-
-
+        DND_DATASTORE_CAMPAIGN_ID = "full-search-campaign"
 
 # Helper to construct full resource name
 def get_datastore_resource_name(datastore_id):
@@ -43,19 +39,20 @@ campaign_vertex_search_tool = VertexAiSearchTool(
     data_store_id=get_datastore_resource_name(DND_DATASTORE_CAMPAIGN_ID)
 )
 
-
+# Instantiate tools directly
 imagen_tool = ImagenTool()
+# For ADK, we might need to name them if the agent uses name lookup, or generally the tool's own name attribute is used.
+# If ADK needs a wrapper, we can use FunctionTool, but Custom Tools usually inherit from Tool or just implement __call__ / run.
+# I will assume for now that passing the instance is enough or I will fix it if ADK complains.
+# Actually ADK has a `Tool` class. `VertexAiSearchTool` inherits from it.
+# My `ImagenTool` and `HtmlWriterTool` will need to inherit from `google.adk.tools.Tool` or be compatible.
+# I'll stick to just instantiating them here.
 
-adk_imagen_tool = CrewaiTool(
-    name="Imagen_Images_Creator",
-    description="""A tool designed to generate images using Google's Imagen model.""",
-    tool=imagen_tool
-)
+adk_imagen_tool = imagen_tool # Alias for backward compatibility if needed, but better to use `imagen_tool`
+# In `agent.py` or subagents, they import `imagen_tool`? 
+# I should check where `adk_imagen_tool` was used.
+# The `tools.py` exported `adk_imagen_tool`. I will keep the name but assigning the instance.
 
-from dundra.html_writer_tool import HtmlWriterTool
 html_writer = HtmlWriterTool()
-adk_html_tool = CrewaiTool(
-    name="Html_Writer_Tool",
-    description="""A tool to write HTML content to a file in the generated_stories directory.""",
-    tool=html_writer
-)
+adk_html_tool = html_writer
+
